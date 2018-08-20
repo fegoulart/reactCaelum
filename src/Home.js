@@ -124,6 +124,17 @@ class Home extends Component {
         })
     }
 
+    fechaModal = (evento) => {
+        const elementoAlvo = evento.target
+        const isModal = elementoAlvo.classList.contains('modal')
+
+        if (isModal) {
+            this.setState({
+                tweetAtivo: {}
+            })
+        }
+    }
+
     render() {
         //console.log('tweets', this.state.tweets)
         return (
@@ -175,6 +186,7 @@ class Home extends Component {
                                             removivel={tweetAtual.removivel}
                                             removeHandler={() => { this.removeOTweet(tweetAtual._id) }}
                                             abreModalHandler={() => { this.abreModal(tweetAtual._id) }}
+
                                         />
                                     })
                                 }
@@ -184,7 +196,8 @@ class Home extends Component {
                         </Widget>
                     </Dashboard>
                 </div>
-                <Modal isAberto={Boolean(this.state.tweetAtivo._id)}>
+                <Modal isAberto={Boolean(this.state.tweetAtivo._id)}
+                fechaModal={this.fechaModal}>
                     {
                         Boolean(this.state.tweetAtivo._id) &&
 
@@ -194,6 +207,7 @@ class Home extends Component {
                             texto={this.state.tweetAtivo.conteudo}
                             usuario={this.state.tweetAtivo.usuario}
                             totalLikes={this.state.tweetAtivo.totalLikes}
+                            likeado={this.state.tweetAtivo.likeado}
                             />
                     </Widget>
                     }
