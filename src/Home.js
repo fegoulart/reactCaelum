@@ -7,6 +7,8 @@ import Widget from './components/Widget'
 import TrendsArea from './components/TrendsArea'
 import Tweet from './components/Tweet'
 import Modal from './components/Modal'
+import * as TweetsActions from './actions/TweetsActions'
+
 
 class Home extends Component {
     constructor() {
@@ -18,22 +20,26 @@ class Home extends Component {
         }
     }
 
+    static contextTypes = {   
+        store: PropTypes.object  
+    }
+
+
     componentDidMount() {
         //console.log('didMount')
-        fetch(`http://twitelum-api.herokuapp.com/tweets?X-AUTH-TOKEN=${localStorage.getItem('TOKEN')}`)
+        //console.log(this)
 
-            //fetch('http://twitelum-api.herokuapp.com/tweets')
-            .then((respostaDoServidor) => {
+        this.context.store.subscribe(()=>{
+            console.log('dentro do subscribe')
 
-                return respostaDoServidor.json()
-
+            this.setState({
+                tweets: this.context.store.getState()
             })
+        })
 
-            .then((tweetsVindosDoServidor) => {
-                this.setState({
-                    tweets: tweetsVindosDoServidor
-                })
-            })
+        //TweetsActions.carregaTweets(this.context.store)
+        this.context.store.dispatch(TweetsActions.carregaTweets())
+
     }
 
     adicionaTweet = (event) => {

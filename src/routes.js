@@ -24,6 +24,8 @@ const LogoutPage = () => {
     return ( <Redirect to="/login" /> )
 }
 
+
+
 export default class Routes extends Component {
     render() {
         return (
