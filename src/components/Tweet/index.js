@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 import './tweet.css'
+//import * as TweetsActions from '../../actions/TweetsActions'
+//import PropTypes from 'prop-types'; 
+
 
 class Tweet extends Component {
     //console.log(this)
@@ -12,6 +15,55 @@ class Tweet extends Component {
 
         }
     }
+
+   // static contextTypes = {   
+     //   store: PropTypes.object  
+    //}
+
+   // removeHandler = () => {
+    
+     //   const idDoTweet = this.props.id 
+       // console.log('estou dentro do tweet', idDoTweet)
+        //this.context.store.dispatch(TweetsActions.removeOTweet(idDoTweet))
+
+        /*
+        //varre os tweets do state e tira o que tem o id desejado
+        const listaAtualizada = this.state.tweets.filter((tweetAtual) => {
+            if (tweetAtual._id !== idDoTweet) {
+                return true
+            } else {
+                return false
+            }
+        })
+
+        fetch(`http://twitelum-api.herokuapp.com/tweets/${idDoTweet}?X-AUTH-TOKEN=${localStorage.getItem('TOKEN')}`, {
+            method: 'DELETE'
+        })
+            .then((resposta) => {
+                console.log('flg status', resposta.status)
+                if (resposta.status !== 201) {
+                    throw Error
+                }
+
+                return resposta.json()
+            })
+            .then((respostaConvertidaEmObjeto) => {
+                //console.log(respostaConvertidaEmObjeto) 
+                this.setState({
+                    tweets: listaAtualizada
+                })
+            })
+
+            .catch((error) => {
+                console.log('deu erro')
+            })
+
+
+        this.setState({
+            tweets: listaAtualizada
+        })
+        */
+   // }
 
     likeHandler = () => {
         const { likeado, totalLikes } = this.state

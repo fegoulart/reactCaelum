@@ -5,10 +5,10 @@ import NavMenu from './components/NavMenu'
 import Dashboard from './components/Dashboard'
 import Widget from './components/Widget'
 import TrendsArea from './components/TrendsArea'
-import Tweet from './components/Tweet'
+//import Tweet from './components/Tweet'
+import Tweet from './containers/TweetContainer'
 import Modal from './components/Modal'
 import * as TweetsActions from './actions/TweetsActions'
-
 
 class Home extends Component {
     constructor() {
@@ -24,13 +24,12 @@ class Home extends Component {
         store: PropTypes.object  
     }
 
-
     componentDidMount() {
         //console.log('didMount')
         //console.log(this)
 
         this.context.store.subscribe(()=>{
-            console.log('dentro do subscribe')
+            //console.log('dentro do subscribe')
 
             this.setState({
                 tweets: this.context.store.getState()
@@ -38,6 +37,7 @@ class Home extends Component {
         })
 
         //TweetsActions.carregaTweets(this.context.store)
+        //esta chamada de dispatch nao chama o subscribe pois recebe um metodo como parametro
         this.context.store.dispatch(TweetsActions.carregaTweets())
 
     }
@@ -48,77 +48,15 @@ class Home extends Component {
         //valida o conteudo
         if (this.state.novoTweet) {
 
-            fetch(`http://twitelum-api.herokuapp.com/tweets?X-AUTH-TOKEN=${localStorage.getItem('TOKEN')}`, {
-                method: 'POST',
-                body: JSON.stringify({ conteudo: this.state.novoTweet })
-            })
-                .then((respostaDoServidor) => {
-                    console.log('Resposta do Servidor', respostaDoServidor.status)
-                    if (respostaDoServidor.status !== 201) {
-                        //erro
-                        throw Error
-                    }
+            this.context.store.dispatch(TweetsActions.adicionaTweet(this.state.novoTweet))
 
-                    return respostaDoServidor.json()
-                })
-                .then((respostaConvertidaEmObjeto) => {
-                    //console.log('Que danada que aconteceu', respostaConvertidaEmObjeto)
-                    this.setState({
-                        //tweets: [this.state.novoTweet, ...this.state.tweets],
-                        tweets: [respostaConvertidaEmObjeto, ...this.state.tweets],
-                        novoTweet: ''
-                    })
-                })
-
-                .catch((erro) => {
-                    console.log('deu erro');
-                })
-
-
-
+            this.setState({
+                novoTweet: ''
+            })    
         }
-
-
     }
 
-    removeOTweet = (idDoTweet) => {
-        console.log('vamo que vamo', idDoTweet)
-        //varre os tweets do state e tira o que tem o id desejado
-        const listaAtualizada = this.state.tweets.filter((tweetAtual) => {
-            if (tweetAtual._id !== idDoTweet) {
-                return true
-            } else {
-                return false
-            }
-        })
 
-        fetch(`http://twitelum-api.herokuapp.com/tweets/${idDoTweet}?X-AUTH-TOKEN=${localStorage.getItem('TOKEN')}`, {
-            method: 'DELETE'
-        })
-            .then((resposta) => {
-                console.log('flg status', resposta.status)
-                if (resposta.status !== 201) {
-                    throw Error
-                }
-
-                return resposta.json()
-            })
-            .then((respostaConvertidaEmObjeto) => {
-                //console.log(respostaConvertidaEmObjeto) 
-                this.setState({
-                    tweets: listaAtualizada
-                })
-            })
-
-            .catch((error) => {
-                console.log('deu erro')
-            })
-
-
-        this.setState({
-            tweets: listaAtualizada
-        })
-    }
 
     abreModal = (idDoTweetQueVaiNoModal) => {
         console.log('Abre modal', idDoTweetQueVaiNoModal)
@@ -177,8 +115,6 @@ class Home extends Component {
                                 }
 
                                 {
-
-
                                     this.state.tweets.map((tweetAtual, indice) => {
                                         //return <Tweet key={indice} texto={tweetAtual} />
                                         return <Tweet
@@ -190,7 +126,7 @@ class Home extends Component {
                                             totalLikes={tweetAtual.totalLikes}
                                             id={tweetAtual._id}
                                             removivel={tweetAtual.removivel}
-                                            removeHandler={() => { this.removeOTweet(tweetAtual._id) }}
+                                            //removeHandler={() => { this.removeOTweet(tweetAtual._id) }}
                                             abreModalHandler={() => { this.abreModal(tweetAtual._id) }}
 
                                         />
