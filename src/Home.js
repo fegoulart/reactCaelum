@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types'; 
+import PropTypes from 'prop-types';
 import Cabecalho from './components/Cabecalho'
 import NavMenu from './components/NavMenu'
 import Dashboard from './components/Dashboard'
@@ -20,19 +20,23 @@ class Home extends Component {
         }
     }
 
-    static contextTypes = {   
-        store: PropTypes.object  
+    static contextTypes = {
+        store: PropTypes.object
     }
 
     componentDidMount() {
         //console.log('didMount')
         //console.log(this)
+        window.store = this.context.store
 
-        this.context.store.subscribe(()=>{
+        this.context.store.subscribe(() => {
             //console.log('dentro do subscribe')
 
             this.setState({
-                tweets: this.context.store.getState()
+                //tweets: this.context.store.getState()
+                tweets: this.context.store.getState().tweets.tweets,
+                tweetAtivo: this.context.store.getState().tweets.tweetAtivo,
+                novoTweet: ''
             })
         })
 
@@ -52,20 +56,26 @@ class Home extends Component {
 
             this.setState({
                 novoTweet: ''
-            })    
+            })
         }
     }
 
 
 
     abreModal = (idDoTweetQueVaiNoModal) => {
-        console.log('Abre modal', idDoTweetQueVaiNoModal)
-        const tweetQueVaiFicarAtivo = this.state.tweets.find((tweetAtual) => {
+
+        /*const tweetQueVaiFicarAtivo = this.state.tweets.find((tweetAtual) => {
             return tweetAtual._id === idDoTweetQueVaiNoModal
         })
         this.setState({
             tweetAtivo: tweetQueVaiFicarAtivo
+        })*/
+        //console.log('idDoTweetDaHome', idDoTweetQueVaiNoModal)
+        this.context.store.dispatch({
+            type: 'ABRE_MODAL',
+            idDoTweetQueVaiNoModal: idDoTweetQueVaiNoModal
         })
+
     }
 
     fechaModal = (evento) => {
@@ -73,10 +83,15 @@ class Home extends Component {
         const isModal = elementoAlvo.classList.contains('modal')
 
         if (isModal) {
-            this.setState({
-                tweetAtivo: {}
+            //this.setState({
+            //    tweetAtivo: {}
+            //})
+
+            this.context.store.dispatch({
+                type: 'FECHA_MODAL'
             })
         }
+
     }
 
     render() {
@@ -115,6 +130,8 @@ class Home extends Component {
                                 }
 
                                 {
+
+
                                     this.state.tweets.map((tweetAtual, indice) => {
                                         //return <Tweet key={indice} texto={tweetAtual} />
                                         return <Tweet
@@ -139,28 +156,34 @@ class Home extends Component {
                     </Dashboard>
                 </div>
                 <Modal isAberto={Boolean(this.state.tweetAtivo._id)}
-                fechaModal={this.fechaModal}>
+                    fechaModal={this.fechaModal}>
                     {
                         Boolean(this.state.tweetAtivo._id) &&
 
                         <Widget>
-                            <Tweet 
-                            id={this.state.tweetAtivo._id}
-                            texto={this.state.tweetAtivo.conteudo}
-                            usuario={this.state.tweetAtivo.usuario}
-                            totalLikes={this.state.tweetAtivo.totalLikes}
-                            likeado={this.state.tweetAtivo.likeado}
+                            <Tweet
+                                id={this.state.tweetAtivo._id}
+                                texto={this.state.tweetAtivo.conteudo}
+                                usuario={this.state.tweetAtivo.usuario}
+                                totalLikes={this.state.tweetAtivo.totalLikes}
+                                likeado={this.state.tweetAtivo.likeado}
+                                removivel={this.state.tweetAtivo.removivel}
                             />
-                    </Widget>
+                        </Widget>
                     }
                 </Modal>
+                { this.context.store.getState().notificacao &&
+                <div className="notificacaoMsg" onAnimationEnd={ () => { this.context.store.dispatch({type: 'REMOVE_NOTIFICACAO'} )}}>
+                    { this.context.store.getState().notificacao}
+                </div>
+                }
             </Fragment>
         );
     }
 }
 
 Tweet.propTypes = {
-    texto: PropTypes.string.isRequired,   
+    texto: PropTypes.string.isRequired,
     usuario: PropTypes.object.isRequired,
     likeado: PropTypes.bool,
     totalLikes: PropTypes.number.isRequired,
